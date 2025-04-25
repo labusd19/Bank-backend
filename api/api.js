@@ -326,7 +326,7 @@ router.get("/transactions/:id", isAuth, async (req, res, next) => {
           include: [
             {
               model: User,
-              attributes: ["fullname", "email"],
+              attributes: ["fullname"],
             },
           ],
         },
