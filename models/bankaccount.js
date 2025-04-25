@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
   class BankAccount extends Model {
     static associate(models) {
       BankAccount.belongsTo(models.User, { foreignKey: "userId" });
-      BankAccount.hasMany(models.Card, { foreignKey: "bankAccountId" });
       BankAccount.hasMany(models.Transaction, {
         foreignKey: "sender_account_id",
       });
+
       BankAccount.hasMany(models.Transaction, {
         foreignKey: "reciver_account_id",
       });

@@ -301,12 +301,37 @@ router.delete("/bank-account/:id", isAuth, isAdmin, async (req, res, next) => {
 // TRANSACTIONS CRUD
 
 // GET transaction by id
-
 router.get("/transactions/:id", isAuth, async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const transaction = await Transaction.findByPk(id);
+    const transaction = await Transaction.findByPk(id, {
+      include: [
+        {
+          model: BankAccount,
+          as: "Sender",
+          attributes: ["userId"],
+          include: [
+            {
+              model: User,
+              attributes: ["fullname"],
+            },
+          ],
+        },
+        {
+          model: BankAccount,
+          as: "Receiver",
+          attributes: ["userId"],
+
+          include: [
+            {
+              model: User,
+              attributes: ["fullname", "email"],
+            },
+          ],
+        },
+      ],
+    });
 
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
@@ -315,9 +340,10 @@ router.get("/transactions/:id", isAuth, async (req, res, next) => {
     return res.status(200).json(transaction);
   } catch (error) {
     console.error("Error occurred! ", error);
-    return res
-      .status(500)
-      .json({ message: "Internal server error! ", error: error });
+    return res.status(500).json({
+      message: "Internal server error! ",
+      error: error.message,
+    });
   }
 });
 
