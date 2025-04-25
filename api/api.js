@@ -127,7 +127,25 @@ router.put("/reset-password/:id", isAuth, async (req, res, next) => {
 
 // Get bank account by ID
 
-router.get("/bank-account/:id", async (req, res, next) => {
+router.get("/bank-account", isAuth, async (req, res, next) => {
+  const { id } = req.user;
+
+  try {
+    const bankAccounts = await BankAccount.findAll({ where: { userId: id } });
+    if (!bankAccounts) {
+      return res
+        .status(404)
+        .json({ message: "This user has no bank account yet!" });
+    }
+
+    return res.status(200).json(bankAccounts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error!", error });
+  }
+});
+
+router.get("/bank-account/:id", isAuth, async (req, res, next) => {
   const { id } = req.params;
 
   try {
