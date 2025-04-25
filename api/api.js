@@ -222,6 +222,35 @@ router.get("/bank-account", async (req, res, next) => {
   }
 });
 
+router.get("/bank-account/transactions/:id", isAuth, async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const bankAccount = await BankAccount.findByPk(id);
+    if (!bankAccount) {
+      return res.status(404).json({ message: "No bank account found!" });
+    }
+
+    const accountNumber = bankAccount.accountNumber;
+
+    const transactions = await Transaction.findAll({
+      where: {
+        [Op.or]: [
+          { sender_account_id: accountNumber },
+          { reciver_account_id: accountNumber },
+        ],
+      },
+    });
+
+    return res.status(200).json(transactions);
+  } catch (error) {
+    console.error("Error occured!", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error!", error: error });
+  }
+});
+
 // Create bank account
 
 router.post("/bank-account", async (req, res) => {
