@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Transaction.belongsTo(models.BankAccount, {
-        as: "Receiver",
+        as: "Reciver",
         foreignKey: "reciver_account_id",
         targetKey: "accountNumber",
         onDelete: "CASCADE",

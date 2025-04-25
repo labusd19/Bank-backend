@@ -320,7 +320,7 @@ router.get("/transactions/:id", isAuth, async (req, res, next) => {
         },
         {
           model: BankAccount,
-          as: "Receiver",
+          as: "Reciver",
           attributes: ["userId"],
 
           include: [
