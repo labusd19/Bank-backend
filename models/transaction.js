@@ -6,14 +6,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Veza sa BankAccount (pošiljalac)
       Transaction.belongsTo(models.BankAccount, {
-        as: "Sender",
         foreignKey: "sender_account_id",
         onDelete: "CASCADE",
       });
 
       // Veza sa BankAccount (primalac)
       Transaction.belongsTo(models.BankAccount, {
-        as: "Receiver",
         foreignKey: "reciver_account_id",
         onDelete: "CASCADE",
       });

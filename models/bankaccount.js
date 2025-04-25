@@ -11,11 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       BankAccount.belongsTo(models.User, { foreignKey: "userId" });
       BankAccount.hasMany(models.Card, { foreignKey: "bankAccountId" });
       BankAccount.hasMany(models.Transaction, {
-        as: "SentTransactions",
         foreignKey: "sender_account_id",
       });
       BankAccount.hasMany(models.Transaction, {
-        as: "ReceivedTransactions",
         foreignKey: "reciver_account_id",
       });
     }
