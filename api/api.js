@@ -127,7 +127,7 @@ router.put("/reset-password/:id", isAuth, async (req, res, next) => {
 
 // Get bank account by ID
 
-router.get("/bank-account", isAuth, async (req, res, next) => {
+router.get("/bank-accounts", isAuth, async (req, res, next) => {
   const { id } = req.user;
 
   try {
@@ -160,6 +160,12 @@ router.get("/bank-account/:id", isAuth, async (req, res, next) => {
       return res
         .status(404)
         .json({ message: "Bank account with this id does not exist." });
+    }
+
+    if (bankAccount.userId !== req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "This account does not belong to you!" });
     }
 
     // bankAccount.balance = new Decimal(bankAccount.balance);
@@ -197,12 +203,12 @@ router.get("/bank-account/:id", isAuth, async (req, res, next) => {
 });
 
 // GET bank account by account number
-router.get("/bank-account", async (req, res, next) => {
+router.get("/bank-account", isAuth, async (req, res, next) => {
   const { accountNumber } = req.body;
 
   try {
     const bankAccount = await BankAccount.findOne({
-      where: { accountNumber },
+      where: { accountNumber: accountNumber },
       include: {
         model: User,
         attributes: ["fullname"],
@@ -213,6 +219,12 @@ router.get("/bank-account", async (req, res, next) => {
       return res.status(404).json({
         message: "Bank account with this account number does not exist.",
       });
+    }
+
+    if (bankAccount.userId !== req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "This account does not belong to you!" });
     }
 
     return res.status(200).json(bankAccount);
@@ -229,6 +241,12 @@ router.get("/bank-account/transactions/:id", isAuth, async (req, res, next) => {
     const bankAccount = await BankAccount.findByPk(id);
     if (!bankAccount) {
       return res.status(404).json({ message: "No bank account found!" });
+    }
+
+    if (bankAccount.userId !== req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "This account does not belong to you!" });
     }
 
     const accountNumber = bankAccount.accountNumber;
@@ -253,7 +271,7 @@ router.get("/bank-account/transactions/:id", isAuth, async (req, res, next) => {
 
 // Create bank account
 
-router.post("/bank-account", async (req, res) => {
+router.post("/bank-account", isAuth, isAdmin, async (req, res) => {
   const { userId } = req.body;
 
   try {
